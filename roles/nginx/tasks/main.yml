@@ -1,0 +1,28 @@
+---
+
+- name: Install nginx repo
+  yum_repository:
+    name: nginx
+    description: "nginx repo"
+    baseurl: http://nginx.org/packages/centos/7/$basearch/
+    gpgcheck: no
+    enabled: yes
+
+- name: Install package nginx
+  yum: name=nginx update_cache=yes
+
+- name: Starting service nginx
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: enabled firewall {{ item }} ports
+  when: service_firewalld_exists
+  firewalld: zone=public port={{ item }} permanent=true state=enabled
+  with_items:
+    - '80/tcp'
+    - '433/tcp'
+    - '8080/tcp'
+  notify:
+    - restart firewalld

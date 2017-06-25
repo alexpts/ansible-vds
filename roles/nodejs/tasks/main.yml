@@ -1,0 +1,12 @@
+---
+- name: nodejs install repo
+  shell: curl --silent --location https://rpm.nodesource.com/setup_9.x | sudo bash -
+
+- name: nodejs install
+  yum: name=nodejs update_cache=yes
+
+- name: deps nodejs install
+  yum: name={{item}} state=latest
+  with_items:
+  - gcc-c++
+  - make

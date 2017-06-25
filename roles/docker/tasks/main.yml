@@ -1,0 +1,35 @@
+---
+
+- name: clean legasy docker
+  yum: name={{item}} state=removed
+  with_items:
+  - docker
+  - docker-common
+  - docker-selinux
+  - docker-engine
+
+- name: install utils for docker
+  yum: name={{item}} state=present
+  with_items:
+  - yum-utils
+  - device-mapper-persistent-data
+  - lvm2
+
+- name: add repo
+  shell: sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  become: true
+
+- name: install docker
+  yum: name={{item}} state=latest
+  with_items:
+  - docker-ce
+  - docker-compose
+  notify: restart docker
+
+- name: Enable service docker
+  service:
+    name: docker
+    enabled: yes
+
+- name: Enable IPv4-Forwarding
+  sysctl: name=net.ipv4.ip_forward value=1 state=present

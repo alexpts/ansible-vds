@@ -1,0 +1,64 @@
+---
+
+# Remi
+- name: import rpm keys
+  rpm_key:
+    key: https://rpms.remirepo.net/RPM-GPG-KEY-remi2021 # remi2021 = EL9 = Centos9
+    state: present
+
+- name: Install remi repo
+  dnf:
+    name: https://rpms.remirepo.net/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm # 9
+    state: present
+
+- name: Enable remi repo
+  command: dnf config-manager --set-enabled remi
+
+
+# Epel
+- rpm_key:
+    state: present
+    key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }} # 9
+
+- name: Install epel repo {{ ansible_distribution_major_version }}
+  yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+    state: present
+
+- name: Upgrade all packages
+  dnf:
+    name: "*"
+    state: latest
+    update_cache: true
+
+- name: Software install
+  yum:
+    name: [htop, mc, wget, sudo, gettext]
+    state: latest
+
+#- name: NTP daemon enable
+#  service:
+#    name: ntpdate
+#    enabled: yes
+#
+- name: Disable SELinux
+  selinux:
+    state: disabled
+
+- name: Set authorized key for 'root' from file and remove other keys
+  authorized_key:
+    state: present
+    user: root
+    exclusive: yes
+    key: "{{ path_to_ssh_pub_key_in_host }}"
+
+- name: set timezone to Europe/Moscow
+  timezone:
+    name: Europe/Moscow
+
+- name: Disallow password authentication
+  lineinfile: dest=/etc/ssh/sshd_config
+    regexp="^PasswordAuthentication"
+    line="PasswordAuthentication no"
+    state=present
+  notify: Restart ssh

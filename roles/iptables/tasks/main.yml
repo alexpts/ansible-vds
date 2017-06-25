@@ -1,0 +1,14 @@
+---
+
+- name: enabled firewall {{ item }} ports
+  firewalld: zone=public port={{ item }} permanent=true state=enabled
+  when: service_firewalld_exists
+  with_items:
+    - '80/tcp'
+    - '443/tcp'
+    - '8080/tcp'
+    #- '9091/tcp'
+    #- '9092/tcp'
+    #- '9093/tcp'
+  notify:
+    - restart firewalld

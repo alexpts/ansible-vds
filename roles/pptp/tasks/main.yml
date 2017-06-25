@@ -1,0 +1,22 @@
+---
+
+- name: deps pptp install
+  yum: name={{item}} state=latest
+  with_items:
+  - ppp
+  - pptpd
+  - pptp
+
+- name: Write configuration
+  copy: src=pptpd-options dest=/etc/ppp/options owner=root group=root
+  notify: restart pptpd
+
+- name: Write secrets
+  copy: src=chap-secrets dest=/etc/ppp/chap-secrets owner=root group=root
+  notify: restart pptpd
+
+- name: Enable IPv4-Forwarding
+  sysctl: name=net.ipv4.ip_forward value=1 state=present
+
+- name: Setup NAT-Rule
+  shell: iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE && iptables-save

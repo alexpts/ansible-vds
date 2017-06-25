@@ -1,0 +1,5 @@
+---
+
+- name: Check firewalld service exists
+  shell: "if chkconfig --list | grep -q firewalld; then echo true; else echo false; fi;"
+  register: service_firewalld_exists

@@ -1,0 +1,7 @@
+---
+
+- name: Upgrade all packages
+  yum: name=* state=latest update_cache=true
+
+- name: Software install
+  yum: name=git state=latest

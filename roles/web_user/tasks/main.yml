@@ -1,0 +1,31 @@
+---
+
+- name: Create group `docker`
+  group:
+    name: docker
+    state: present
+
+- name: Create group `web`
+  group:
+    name: web
+    state: present
+
+- name: add new user 'web'
+  user:
+    name: web
+    comment: "Custom web user and add to group docker"
+    state: present
+    groups: web,docker
+
+- name: Set authorized key for 'web' from file
+  authorized_key:
+    state: present
+    user: web
+    exclusive: yes
+    key: "{{ path_to_ssh_pub_key_in_host }}"
+
+- name: adding web user to sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    line: "web ALL=(ALL) NOPASSWD: ALL"
+    state: present
