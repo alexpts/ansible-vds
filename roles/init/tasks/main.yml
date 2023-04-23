@@ -2,8 +2,12 @@
 
 # Remi
 - name: import rpm keys
+  with_items: # remi2021 = EL9 = Centos9
+    - "https://rpms.remirepo.net/RPM-GPG-KEY-remi2021"
+    - "https://rpms.remirepo.net/RPM-GPG-KEY-remi2022"
+    - "https://rpms.remirepo.net/RPM-GPG-KEY-remi2023"
   rpm_key:
-    key: https://rpms.remirepo.net/RPM-GPG-KEY-remi2021 # remi2021 = EL9 = Centos9
+    key: "{{ item }}"
     state: present
 
 - name: Install remi repo
@@ -33,7 +37,7 @@
 
 - name: Software install
   yum:
-    name: [htop, mc, wget, sudo, gettext]
+    name: [htop, mc, wget, sudo, gettext, yum-utils]
     state: latest
 
 #- name: NTP daemon enable

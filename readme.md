@@ -1,6 +1,6 @@
 ## Install all
 
-ansible-playbook --ask-pass ansible.yml
+ansible-playbook --ask-pass vds-centos9.yml
 
 
 ## Lets encrypt
